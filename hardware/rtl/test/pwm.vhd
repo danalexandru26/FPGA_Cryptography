@@ -23,9 +23,6 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity pwm is
-    generic(
-        h_fClk : integer := 6250000
-    );
     port(
         clk      : in std_logic;
         led_blue : out std_logic
@@ -33,5 +30,19 @@ entity pwm is
 end pwm;
 
 architecture RTL of pwm is
+    signal duty_cycle : integer := 150;
+    signal counter    : unsigned (7 downto 0) := (others => '0');
 begin
+    process(clk)
+        begin
+            if(rising_edge(clk)) then
+                counter <= counter + 1;
+            end if;
+            
+            if(counter < duty_cycle) then
+                led_blue <= '1';
+            else
+                led_blue <= '0';
+            end if;
+        end process;
 end RTL;
