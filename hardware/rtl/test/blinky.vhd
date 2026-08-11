@@ -5,7 +5,7 @@
 -- Create Date: 08/11/2026 10:11:50 PM
 -- Design Name: Blinky
 -- Module Name: Blinky - Behavioral
--- Project Name: FPGA_Cryptography 
+-- Project Name: FPGA_Cryptography Test Suite
 -- Target Devices: Digilent Arty Z7020 
 -- Tool Versions: 
 -- Description: 
