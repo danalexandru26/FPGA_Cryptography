@@ -37,29 +37,21 @@ end pwm;
 architecture RTL of pwm is
     signal duty_cycle  : integer := 0;
     signal counter     : unsigned (7 downto 0) := (others => '0');
-    signal button_mask : unsigned (3 downto 0) := (others => '0');
 begin
     process(clk)
         begin
             if(rising_edge(clk)) then
                 counter <= counter + 1;
                             
-                button_mask(0) <= btn_a;
-                button_mask(1) <= btn_b;
-                button_mask(2) <= btn_c;
-                button_mask(3) <= btn_d;   
-                case(button_mask) is 
-                    when "0001" =>
-                        duty_cycle <= 5;
-                    when "0010" =>
-                        duty_cycle <= 50;
-                    when "0100" =>
-                        duty_cycle <= 150;
-                    when "1000" =>
-                        duty_cycle <= 255;
-                    when others =>
-                        null;
-                end case;
+                if (btn_a = '1') then
+                    duty_cycle <= 0;
+                elsif (btn_b = '1') then
+                    duty_cycle <= 50;
+                elsif (btn_c = '1') then
+                    duty_cycle <= 150;
+                elsif (btn_d = '1') then
+                    duty_cycle <= 255;
+                end if;
                 
                 if(counter < duty_cycle) then
                     led_blue <= '1';
