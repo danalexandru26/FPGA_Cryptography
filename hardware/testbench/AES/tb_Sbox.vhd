@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: Bulzan Dan-Alexandru
+-- 
+-- Create Date: 08/13/2026 5:0:00 PM
+-- Design Name: Substitution Box Test Bench
+-- Module Name: Test Bench - Behavioral
+-- Project Name: FPGA_Cryptography Advanced Encryption Standard Testbench
+-- Target Devices: Digilent Arty Z7020 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
