@@ -17,3 +17,33 @@
 -- Additional Comments:
 -- 
 ----------------------------------------------------------------------------------
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+library AES;
+use AES.all;
+
+entity tb_SBox is
+
+end tb_SBox;
+
+architecture TB of tb_Sbox is
+    signal tb_input  : std_logic_vector (7 downto 0) := (others => '0');
+    signal tb_result : std_logic_vector (7 downto 0) := (others => '0');
+    
+    begin
+        DUT: entity SBox port map(
+             state      => tb_input,
+             substitute => tb_result
+        );
+        
+        TEST: process
+            begin
+            
+               wait for 10ns;
+               tb_input <= std_logic_vector(unsigned(tb_input) + 1); 
+            
+            end process;
+end TB;
