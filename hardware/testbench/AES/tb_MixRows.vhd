@@ -66,7 +66,6 @@ architecture TB of tb_MixRows is
                     4  => x"92", 5   => x"E1", 6  => x"36", 7  => x"7B",
                     8  => x"5D", 9   => x"08", 10 => x"F4", 11 => x"B2",
                     12 => x"6C", 13  => x"DA", 14 => x"21", 15 => x"89"
-                );
-                
+                );     
             end process;
 end TB;
