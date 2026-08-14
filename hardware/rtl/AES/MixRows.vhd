@@ -28,7 +28,7 @@ use aes_utilities.types.all;
 entity MixRows is
     port(
         state  : in byte_matrix (15 downto 0);
-        output : out byte_matrix (15 downto 0) := (others => "0")
+        output : out byte_matrix (15 downto 0)
 );
 end MixRows;
 
