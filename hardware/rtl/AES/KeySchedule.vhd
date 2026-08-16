@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: Bulzan Dan-Alexandru
 -- 
--- Create Date: 08/13/2026 5:0:00 PM
--- Design Name: Substitution Box
--- Module Name: Substitution Box - Behavioral
+-- Create Date: 08/16/2026 03:56:00 PM
+-- Design Name: Key Schedule
+-- Module Name: Key Schedule - Behavioral
 -- Project Name: FPGA_Cryptography Advanced Encryption Standard Core
 -- Target Devices: Digilent Arty Z7020 
 -- Tool Versions: 
@@ -25,14 +25,17 @@ use IEEE.numeric_std.all;
 library aes_utilities;
 use aes_utilities.types.all;
 
-entity SBox is
+entity KeySchedule is
     port(
-        state      : in std_logic_vector(7 downto 0);
-        substitute : out std_logic_vector(7 downto 0)
+        round  : in std_logic_vector(7 downto 0);
+        i_key  : in byte_matrix(15 downto 0);
+        o_key  : out byte_matrix(15 downto 0)
 );
-end SBox;
+end KeySchedule;
 
-architecture RTL of SBox is
+architecture RTL of KeySchedule is
     begin
-        substitute <= substitution_table(to_integer(unsigned(state)));
-end RTL;
+    
+    
+    
+end RTL;    
