@@ -2,7 +2,7 @@
 -- Company: 
 -- Engineer: Bulzan Dan-Alexandru
 -- 
--- Create Date: 08/14/2026 3:0:00 PM
+-- Create Date: 08/14/2026 3:00:00 PM
 -- Design Name: Column Diffusion Operation Testbench
 -- Module Name: Column Diffusion Operation Testbench - Behavioral
 -- Project Name: FPGA_Cryptography Advanced Encryption Standard Testbench
