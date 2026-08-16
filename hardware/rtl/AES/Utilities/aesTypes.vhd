@@ -57,30 +57,61 @@ package types is
             240  => x"8C", 241  => x"A1", 242  => x"89", 243  => x"0D", 244  => x"BF", 245  => x"E6", 246  => x"42", 247  => x"68",
             248  => x"41", 249  => x"99", 250  => x"2D", 251  => x"0F", 252  => x"B0", 253  => x"54", 254  => x"BB", 255  => x"16"
            );
+           
+    constant round_coefficient : byte_matrix (9 downto 0) := (
+            0 => x"01", 1 => x"02", 2 => x"04", 3 => x"08", 4 => x"10",
+            5 => x"20", 6 => x"40", 7 => x"80", 8 => x"1B", 9 => x"36"
+           );
 end package;
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+library aes_utilities;
+use aes_utilities.types.all;
 
 package functions is 
     function xtime (
         state_in : in std_logic_vector (7 downto 0))
         return std_logic_vector;
+        
+    function gSchedule (
+        word  : in byte_matrix (3 downto 0);
+        round : in std_logic_vector (7 downto 0))
+        return byte_matrix;
 end package;
 
 package body functions is
     function xtime (
         state_in : in std_logic_vector (7 downto 0))
         return std_logic_vector is
-        variable aMod : std_logic_vector(7 downto 0);
+        variable a_mod : std_logic_vector(7 downto 0);
         
         begin
             if(state_in(7) = '0') then
-                aMod := state_in(6 downto 0) & '0';
+                a_mod := state_in(6 downto 0) & '0';
             else
-                aMod := (state_in(6 downto 0) & '0') xor x"1B";
+                a_mod := (state_in(6 downto 0) & '0') xor x"1B";
             end if;
             
-            return aMod;
+            return a_mod;
         end function xtime;
+        
+    function gSchedule (
+        word  : in byte_matrix (3 downto 0);
+        round : in std_logic_vector (7 downto 0))
+        return byte_matrix is
+        variable o_word : byte_matrix(3 downto 0);
+        
+        begin
+            o_word(1) := substitution_table(to_integer(unsigned(word(2))));
+            o_word(2) := substitution_table(to_integer(unsigned(word(3))));
+            o_word(3) := substitution_table(to_integer(unsigned(word(0))));
+            o_word(0) := substitution_table(to_integer(unsigned(word(1)))) xor round_coefficient(to_integer(unsigned(round)));
+            
+        
+            return o_word;
+        end function gSchedule;
+        
 end package body;
