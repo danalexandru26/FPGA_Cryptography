@@ -80,19 +80,24 @@ package functions is
         word  : in byte_matrix (3 downto 0);
         round : in std_logic_vector (7 downto 0))
         return byte_matrix;
+        
+    function "xor" (
+        left  : in byte_matrix (3 downto 0);
+        right : in byte_matrix (3 downto 0))
+        return byte_matrix;
 end package;
 
 package body functions is
     function xtime (
         state_in : in std_logic_vector (7 downto 0))
         return std_logic_vector is
-        variable a_mod : std_logic_vector(7 downto 0);
+        variable a_mod : std_logic_vector (7 downto 0);
         
         begin
             if(state_in(7) = '0') then
-                a_mod := state_in(6 downto 0) & '0';
+                a_mod := state_in (6 downto 0) & '0';
             else
-                a_mod := (state_in(6 downto 0) & '0') xor x"1B";
+                a_mod := (state_in (6 downto 0) & '0') xor x"1B";
             end if;
             
             return a_mod;
@@ -102,16 +107,30 @@ package body functions is
         word  : in byte_matrix (3 downto 0);
         round : in std_logic_vector (7 downto 0))
         return byte_matrix is
-        variable o_word : byte_matrix(3 downto 0);
+        variable o_word : byte_matrix (3 downto 0);
         
         begin
             o_word(1) := substitution_table(to_integer(unsigned(word(2))));
             o_word(2) := substitution_table(to_integer(unsigned(word(3))));
             o_word(3) := substitution_table(to_integer(unsigned(word(0))));
             o_word(0) := substitution_table(to_integer(unsigned(word(1)))) xor round_coefficient(to_integer(unsigned(round)));
-            
-        
+           
             return o_word;
         end function gSchedule;
+        
+    function "xor" (
+        left  : in byte_matrix (3 downto 0);
+        right : in byte_matrix (3 downto 0))
+        return byte_matrix is
+        variable result : byte_matrix (3 downto 0);
+        
+        begin
+            result(0) := left(0) xor right(0);
+            result(1) := left(1) xor right(1);
+            result(2) := left(2) xor right(2);
+            result(3) := left(3) xor right(3);
+            
+            return result;
+        end function "xor";
         
 end package body;

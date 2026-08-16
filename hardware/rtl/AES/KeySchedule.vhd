@@ -34,7 +34,20 @@ entity KeySchedule is
 end KeySchedule;
 
 architecture RTL of KeySchedule is
+    signal w0 : byte_matrix (3 downto 0);
+    signal w1 : byte_matrix (3 downto 0);
+    signal w2 : byte_matrix (3 downto 0);
+    signal w3 : byte_matrix (3 downto 0);
     begin
+    
+    WORD_CONCETENATION:
+        w0 <= i_key (3 downto 0);
+        w1 <= i_key (7 downto 4);
+        w2 <= i_key (11 downto 8);
+        w3 <= i_key (15 downto 12);
+        
+    ROUND_KEY_COMPUTE:
+    
     
     
     
