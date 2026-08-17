@@ -27,12 +27,16 @@ use aes_utilities.types.all;
 
 entity SBox is
     port(
-        state      : in std_logic_vector(7 downto 0);
-        substitute : out std_logic_vector(7 downto 0)
+        state      : in byte_matrix (15 downto 0);
+        substitute : out byte_matrix (15 downto 0)
 );
 end SBox;
 
 architecture RTL of SBox is
     begin
-        substitute <= substitution_table(to_integer(unsigned(state)));
+        gen_Substitute:
+            for i in 0 to 15 generate
+            begin
+                substitute(i) <= substitution_table(to_integer(unsigned(state(i))));
+            end generate;
 end RTL;
