@@ -48,7 +48,6 @@ architecture RTL of AES_Core is
     signal s_current_key : byte_matrix (15 downto 0) := (others => (others => '0'));
     
     -- Key Addition Intermediary State Signals
-    signal s_start_state    : byte_matrix (15 downto 0) := (others => (others => '0'));
     signal s_addition_state : byte_matrix (15 downto 0) := (others => (others => '0'));
     
     -- Substitution Box Intermediary State Signals
@@ -62,7 +61,7 @@ architecture RTL of AES_Core is
     signal s_round_state : byte_matrix (15 downto 0) := (others => (others => '0'));
     
     -- Finite State Machine Control Signals
-    signal s_fsm_round : std_logic_vector (7 downto 0) := (others => '0');
+    signal fsm_round   : std_logic_vector(7 downto 0) := (others => '0');
     signal state       : aes_state := S_AES_INIT;
     begin
         
@@ -82,11 +81,19 @@ architecture RTL of AES_Core is
             o_key => s_round_key
         ); 
         
+        c_KeyAddition : entity AES.KeyAddition port map(
+            state     => s_diffusion_output,
+            round_key => s_round_key,
+            output    => s_addition_state 
+        );  
+
+        
         process (clk) 
             begin
                 if(rising_edge(clk)) then
                     case(state) is
                         when S_AES_INIT =>
+                            fsm_round       <= (others => '0');
                             s_round       <= (others => '0');
                             s_sbox_state  <= (others => (others => '0'));
                             s_current_key <= (others => (others => '0'));
@@ -102,14 +109,34 @@ architecture RTL of AES_Core is
                             end if;
                         
                         when S_AES_ENCRYPT =>
+                            if(fsm_round = x"00") then
+                                s_current_key <= key;
+                                s_sbox_state  <= plaintext xor key;
+                                
+                                fsm_round <= std_logic_vector(unsigned(fsm_round) + 1);
+                            
+                            elsif(fsm_round < x"0A") then
+                                s_round       <= std_logic_vector(unsigned(s_round) + 1);
+                                s_current_key <= s_round_key;
+                                s_sbox_state  <= s_addition_state;
+                                
+                                fsm_round <= std_logic_vector(unsigned(fsm_round) + 1);
+                                
+                            else state <= S_AES_DONE_ENCRYPT;
+                         end if; 
                         
                         when S_AES_DECRYPT =>
                             
+                        when S_AES_DONE_ENCRYPT =>
+                            if(start = '0') then
+                                state <= S_AES_IDLE;
+                            end if;
+                        
+                        when others =>
+                            null;
+                           
                     end case;
                 end if;
-            
-            
-            
         end process;    
             
        
