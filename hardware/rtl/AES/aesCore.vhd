@@ -31,6 +31,9 @@ library AES;
 entity AES_Core is
     port(
         clk        : in std_logic;
+        start      : in std_logic;
+        command    : in std_logic;
+        
         plaintext  : in byte_matrix (15 downto 0);
         key        : in byte_matrix (15 downto 0);
         ciphertext : in byte_matrix (15 downto 0)  
@@ -41,21 +44,73 @@ architecture RTL of AES_Core is
 
     -- Key Schedule Intermediary State Signals
     signal s_round       : std_logic_vector (7 downto 0) := (others => '0');
-    signal s_round_key   : byte_matrix (15 downto 0);
-    signal s_current_key : byte_matrix (15 downto 0);
+    signal s_round_key   : byte_matrix (15 downto 0) := (others => (others => '0'));
+    signal s_current_key : byte_matrix (15 downto 0) := (others => (others => '0'));
     
     -- Key Addition Intermediary State Signals
-    signal s_start_state    : byte_matrix (15 downto 0);
-    signal s_addition_state : byte_matrix (15 downto 0); 
+    signal s_start_state    : byte_matrix (15 downto 0) := (others => (others => '0'));
+    signal s_addition_state : byte_matrix (15 downto 0) := (others => (others => '0'));
     
     -- Substitution Box Intermediary State Signals
-    signal s_sbox_state : byte_matrix (15 downto 0);
-    signal s_sbox_output : byte_matrix (15 downto 0);
+    signal s_sbox_state  : byte_matrix (15 downto 0)  := (others => (others => '0'));
+    signal s_sbox_output : byte_matrix (15 downto 0) := (others => (others => '0'));
      
+    -- Diffusion Intermediary State Signals
+    signal s_diffusion_output : byte_matrix (15 downto 0) := (others => (others => '0'));
+    
+    -- AES Intermediary State Signals
+    signal s_round_state : byte_matrix (15 downto 0) := (others => (others => '0'));
+    
+    -- Finite State Machine Control Signals
+    signal s_fsm_round : std_logic_vector (7 downto 0) := (others => '0');
+    signal state       : aes_state := S_AES_INIT;
     begin
         
         c_SubstitutionBox : entity AES.SBox port map(
             state      => s_sbox_state,
             substitute => s_sbox_output    
         );  
+        
+        c_Diffusion : entity AES.Diffusion port map(
+            state  => s_sbox_output,
+            output => s_diffusion_output
+        );
+        
+        c_KeySchedule : entity AES.KeySchedule port map(
+            round => s_round,
+            i_key => s_current_key,
+            o_key => s_round_key
+        ); 
+        
+        process (clk) 
+            begin
+                if(rising_edge(clk)) then
+                    case(state) is
+                        when S_AES_INIT =>
+                            s_round       <= (others => '0');
+                            s_sbox_state  <= (others => (others => '0'));
+                            s_current_key <= (others => (others => '0'));
+                            
+                            state <= S_AES_IDLE;
+                            
+                        when S_AES_IDLE =>
+                            if(start = '1') then
+                                if(command = '0') then
+                                     state <= S_AES_ENCRYPT;
+                                else state <= S_AES_DECRYPT;
+                                end if;
+                            end if;
+                        
+                        when S_AES_ENCRYPT =>
+                        
+                        when S_AES_DECRYPT =>
+                            
+                    end case;
+                end if;
+            
+            
+            
+        end process;    
+            
+       
 end RTL;

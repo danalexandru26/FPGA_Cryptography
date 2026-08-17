@@ -23,6 +23,8 @@ use IEEE.std_logic_1164.all;
 
 package types is
     type byte_matrix is array (natural range <>) of std_logic_vector(7 downto 0);
+    type aes_state is(S_AES_INIT, S_AES_IDLE, S_AES_ENCRYPT, S_AES_DECRYPT);
+    
     constant substitution_table : byte_matrix (255 downto 0) := (
             0    => x"63", 1    => x"7C", 2    => x"77", 3    => x"7B", 4    => x"F2", 5    => x"6B", 6    => x"6F", 7    => x"C5",
             8    => x"30", 9    => x"01", 10   => x"67", 11   => x"2B", 12   => x"FE", 13   => x"D7", 14   => x"AB", 15   => x"76",            
@@ -57,7 +59,7 @@ package types is
             240  => x"8C", 241  => x"A1", 242  => x"89", 243  => x"0D", 244  => x"BF", 245  => x"E6", 246  => x"42", 247  => x"68",
             248  => x"41", 249  => x"99", 250  => x"2D", 251  => x"0F", 252  => x"B0", 253  => x"54", 254  => x"BB", 255  => x"16"
            );
-           
+ 
     constant round_coefficient : byte_matrix (9 downto 0) := (
             0 => x"01", 1 => x"02", 2 => x"04", 3 => x"08", 4 => x"10",
             5 => x"20", 6 => x"40", 7 => x"80", 8 => x"1B", 9 => x"36"
