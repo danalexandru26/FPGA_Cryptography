@@ -30,20 +30,25 @@ library AES;
 entity Diffusion is
     port(
         state  : in byte_matrix (15 downto 0);
+        sel    : in std_logic := '0';
         output : out byte_matrix (15 downto 0)
 );
 end Diffusion;
 
 architecture RTL of Diffusion is
-    signal w_output : byte_matrix (15 downto 0);
+        signal s_row_output : byte_matrix (15 downto 0);
+        signal s_column_output : byte_matrix (15 downto 0);
     begin
         c_MixRows: entity AES.MixRows port map(
             state  => state,
-            output => w_output
+            output => s_row_output
         );
         
         c_MixColumn: entity AES.MixColumn port map(
-            state => w_output,
-            output => output
+            state => s_row_output,
+            output => s_column_output
         );
+        
+        output <= s_column_output when sel = '0' else
+                  s_row_output;
 end RTL;

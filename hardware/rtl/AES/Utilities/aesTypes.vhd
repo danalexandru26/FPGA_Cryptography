@@ -23,7 +23,7 @@ use IEEE.std_logic_1164.all;
 
 package types is
     type byte_matrix is array (natural range <>) of std_logic_vector(7 downto 0);
-    type aes_state is(S_AES_INIT, S_AES_IDLE, S_AES_ENCRYPT, S_AES_DECRYPT, S_AES_DONE_ENCRYPT, S_AES_DONE_DECRYPT);
+    type aes_state is(S_AES_INIT, S_AES_IDLE, S_AES_ENCRYPT, S_AES_DECRYPT, S_AES_ENCRYPT_DONE, S_AES_DECRYPT_DONE);
     
     constant substitution_table : byte_matrix (255 downto 0) := (
             0    => x"63", 1    => x"7C", 2    => x"77", 3    => x"7B", 4    => x"F2", 5    => x"6B", 6    => x"6F", 7    => x"C5",
@@ -87,6 +87,11 @@ package functions is
         left  : in byte_matrix (3 downto 0);
         right : in byte_matrix (3 downto 0))
         return byte_matrix;
+        
+    function matrix_xor (
+        left  : in byte_matrix (15 downto 0);
+        right : in byte_matrix (15 downto 0))
+        return byte_matrix;
 end package;
 
 package body functions is
@@ -134,5 +139,39 @@ package body functions is
             
             return result;
         end function "xor";
+        
+    function matrix_xor (
+        left  : in byte_matrix (15 downto 0);
+        right : in byte_matrix (15 downto 0))
+        return byte_matrix is
+        variable result : byte_matrix (15 downto 0);
+        
+        begin
+            FIRST_COLUMN:
+            result(0)  := left(0)  xor right(0);
+            result(4)  := left(4)  xor right(1);
+            result(8)  := left(8)  xor right(2);
+            result(12) := left(12) xor right(3);
+            
+        SECOND_COLUMN:
+            result(1)  := left(1)  xor right(4);
+            result(5)  := left(5)  xor right(5);
+            result(9)  := left(9)  xor right(6);
+            result(13) := left(13) xor right(7);
+            
+        THIRD_COLUMN:
+            result(2)  := left(2)  xor right(8);
+            result(6)  := left(6)  xor right(9);
+            result(10) := left(10) xor right(10);
+            result(14) := left(14) xor right(11);
+            
+        FOURTH_COLUMN:
+            result(3)  := left(3)  xor right(12);
+            result(7)  := left(7)  xor right(13);
+            result(11) := left(11) xor right(14);
+            result(15) := left(15) xor right(15);
+        
+            return result;
+        end function;
         
 end package body;

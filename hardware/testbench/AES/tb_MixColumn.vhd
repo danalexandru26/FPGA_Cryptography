@@ -33,8 +33,8 @@ entity tb_MixColumn is
 end tb_MixColumn;
 
 architecture TB of tb_MixColumn is
-    signal tb_state  : byte_matrix (15 downto 0);
-    signal tb_output : byte_matrix (15 downto 0);
+        signal tb_state  : byte_matrix (15 downto 0);
+        signal tb_output : byte_matrix (15 downto 0);
     
     begin
         DUT: entity MixColumn port map(

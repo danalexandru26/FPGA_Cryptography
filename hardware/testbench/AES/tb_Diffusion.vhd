@@ -32,12 +32,14 @@ entity tb_Diffusion is
 end tb_Diffusion;
 
 architecture TB of tb_Diffusion is
-    signal tb_state  : byte_matrix (15 downto 0);
-    signal tb_output : byte_matrix (15 downto 0); 
+    signal tb_state  : byte_matrix (15 downto 0) := (others => (others => '0'));
+    signal tb_sel    : std_logic                 := '0';
+    signal tb_output : byte_matrix (15 downto 0) := (others => (others => '0'));
     
     begin
         DUT: entity Diffusion port map(
             state  => tb_state,
+            sel    => tb_sel,
             output => tb_output
         );
         

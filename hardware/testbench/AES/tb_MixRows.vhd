@@ -33,8 +33,8 @@ entity tb_MixRows is
 end tb_MixRows;
 
 architecture TB of tb_MixRows is
-    signal tb_state  : byte_matrix(15 downto 0) := (others => x"00");
-    signal tb_output : byte_matrix(15 downto 0);
+        signal tb_state  : byte_matrix(15 downto 0) := (others => x"00");
+        signal tb_output : byte_matrix(15 downto 0);
     
     begin
         DUT: entity MixRows port map(

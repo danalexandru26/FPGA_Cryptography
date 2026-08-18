@@ -32,37 +32,38 @@ entity AES_Core is
     port(
         clk        : in std_logic;
         start      : in std_logic;
-        command    : in std_logic;
-        
+        command    : in std_logic;        
         plaintext  : in byte_matrix (15 downto 0);
         key        : in byte_matrix (15 downto 0);
-        ciphertext : in byte_matrix (15 downto 0)  
+
+        ciphertext : out byte_matrix (15 downto 0) := (others => (others => '0'));
+        ready      : out std_logic                 := '0'
 );
 end AES_Core;
 
 architecture RTL of AES_Core is
-
-    -- Key Schedule Intermediary State Signals
-    signal s_round       : std_logic_vector (7 downto 0) := (others => '0');
-    signal s_round_key   : byte_matrix (15 downto 0) := (others => (others => '0'));
-    signal s_current_key : byte_matrix (15 downto 0) := (others => (others => '0'));
-    
-    -- Key Addition Intermediary State Signals
-    signal s_addition_state : byte_matrix (15 downto 0) := (others => (others => '0'));
-    
-    -- Substitution Box Intermediary State Signals
-    signal s_sbox_state  : byte_matrix (15 downto 0)  := (others => (others => '0'));
-    signal s_sbox_output : byte_matrix (15 downto 0) := (others => (others => '0'));
-     
-    -- Diffusion Intermediary State Signals
-    signal s_diffusion_output : byte_matrix (15 downto 0) := (others => (others => '0'));
-    
-    -- AES Intermediary State Signals
-    signal s_round_state : byte_matrix (15 downto 0) := (others => (others => '0'));
-    
-    -- Finite State Machine Control Signals
-    signal fsm_round   : std_logic_vector(7 downto 0) := (others => '0');
-    signal state       : aes_state := S_AES_INIT;
+        -- Key Schedule Intermediary State Signals
+        signal s_round       : std_logic_vector (7 downto 0) := (others => '0');
+        signal s_round_key   : byte_matrix (15 downto 0) := (others => (others => '0'));
+        signal s_current_key : byte_matrix (15 downto 0) := (others => (others => '0'));
+        
+        -- Key Addition Intermediary State Signals
+        signal s_addition_state : byte_matrix (15 downto 0) := (others => (others => '0'));
+        
+        -- Substitution Box Intermediary State Signals
+        signal s_sbox_state  : byte_matrix (15 downto 0)  := (others => (others => '0'));
+        signal s_sbox_output : byte_matrix (15 downto 0) := (others => (others => '0'));
+         
+        -- Diffusion Intermediary State Signals
+        signal s_diffusion_output : byte_matrix (15 downto 0) := (others => (others => '0'));
+        signal s_diffusion_sel    : std_logic := '0';
+        
+        -- AES Intermediary State Signals
+        signal s_round_state : byte_matrix (15 downto 0) := (others => (others => '0'));
+        
+        -- Finite State Machine Control Signals
+        signal fsm_round   : std_logic_vector(7 downto 0) := (others => '0');
+        signal state       : aes_state := S_AES_INIT;
     begin
         
         c_SubstitutionBox : entity AES.SBox port map(
@@ -72,6 +73,7 @@ architecture RTL of AES_Core is
         
         c_Diffusion : entity AES.Diffusion port map(
             state  => s_sbox_output,
+            sel    => s_diffusion_sel,
             output => s_diffusion_output
         );
         
@@ -94,9 +96,10 @@ architecture RTL of AES_Core is
                     case(state) is
                         when S_AES_INIT =>
                             fsm_round       <= (others => '0');
-                            s_round       <= (others => '0');
-                            s_sbox_state  <= (others => (others => '0'));
-                            s_current_key <= (others => (others => '0'));
+                            s_round         <= (others => '0');
+                            s_sbox_state    <= (others => (others => '0'));
+                            s_current_key   <= (others => (others => '0'));
+                            s_diffusion_sel <= '0';
                             
                             state <= S_AES_IDLE;
                             
@@ -111,26 +114,30 @@ architecture RTL of AES_Core is
                         when S_AES_ENCRYPT =>
                             if(fsm_round = x"00") then
                                 s_current_key <= key;
-                                s_sbox_state  <= plaintext xor key;
-                                
-                                fsm_round <= std_logic_vector(unsigned(fsm_round) + 1);
+                                s_sbox_state  <= matrix_xor(plaintext, key);
                             
                             elsif(fsm_round < x"0A") then
+                                if(fsm_round = x"09") then
+                                    s_diffusion_sel <= '1';
+                                    state <= S_AES_ENCRYPT_DONE;
+                                end if;
+                           
                                 s_round       <= std_logic_vector(unsigned(s_round) + 1);
                                 s_current_key <= s_round_key;
                                 s_sbox_state  <= s_addition_state;
-                                
-                                fsm_round <= std_logic_vector(unsigned(fsm_round) + 1);
-                                
-                            else state <= S_AES_DONE_ENCRYPT;
-                         end if; 
+                         end if;
+                         
+                         fsm_round <= std_logic_vector(unsigned(fsm_round) + 1); 
                         
                         when S_AES_DECRYPT =>
                             
-                        when S_AES_DONE_ENCRYPT =>
+                        when S_AES_ENCRYPT_DONE =>
                             if(start = '0') then
                                 state <= S_AES_IDLE;
                             end if;
+                            
+                            ciphertext <= s_addition_state;
+                            ready      <= '1';
                         
                         when others =>
                             null;

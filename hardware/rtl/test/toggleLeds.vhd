@@ -32,8 +32,8 @@ entity toggleLeds is
 end toggleLeds;
 
 architecture RTL of toggleLeds is
-    signal btn_state : std_logic   := '0';
-    signal count     : std_logic   := '0';
+        signal btn_state : std_logic   := '0';
+        signal count     : std_logic   := '0';
     begin
         process(clk, rst) 
             begin

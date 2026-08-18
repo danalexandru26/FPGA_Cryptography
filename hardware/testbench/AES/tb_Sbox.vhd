@@ -34,8 +34,8 @@ entity tb_SBox is
 end tb_SBox;
 
 architecture TB of tb_Sbox is
-    signal tb_input  : byte_matrix (15 downto 0);
-    signal tb_result : byte_matrix (15 downto 0);
+        signal tb_input  : byte_matrix (15 downto 0);
+        signal tb_result : byte_matrix (15 downto 0);
     
     begin
         DUT: entity SBox port map(
