@@ -43,7 +43,7 @@ end AES_Core;
 
 architecture RTL of AES_Core is
         -- Key Schedule Intermediary State Signals
-        signal s_round       : std_logic_vector (7 downto 0) := (others => '0');
+        signal s_round       : integer range 0 to 9;
         signal s_round_key   : byte_matrix (15 downto 0) := (others => (others => '0'));
         signal s_current_key : byte_matrix (15 downto 0) := (others => (others => '0'));
         
@@ -62,7 +62,7 @@ architecture RTL of AES_Core is
         signal s_round_state : byte_matrix (15 downto 0) := (others => (others => '0'));
         
         -- Finite State Machine Control Signals
-        signal fsm_round   : std_logic_vector(7 downto 0) := (others => '0');
+        signal fsm_round   : integer range 0 to 9;
         signal state       : aes_state := S_AES_INIT;
     begin
         
@@ -95,8 +95,8 @@ architecture RTL of AES_Core is
                 if(rising_edge(clk)) then
                     case(state) is
                         when S_AES_INIT =>
-                            fsm_round       <= (others => '0');
-                            s_round         <= (others => '0');
+                            fsm_round       <= 0;
+                            s_round         <= 0;
                             s_sbox_state    <= (others => (others => '0'));
                             s_current_key   <= (others => (others => '0'));
                             s_diffusion_sel <= '0';
@@ -112,22 +112,22 @@ architecture RTL of AES_Core is
                             end if;
                         
                         when S_AES_ENCRYPT =>
-                            if(fsm_round = x"00") then
+                            if(fsm_round = 0) then
                                 s_current_key <= key;
                                 s_sbox_state  <= matrix_xor(plaintext, key);
                             
-                            elsif(fsm_round < x"0A") then
-                                if(fsm_round = x"09") then
+                            else
+                                if(fsm_round = 9) then
                                     s_diffusion_sel <= '1';
                                     state <= S_AES_ENCRYPT_DONE;
                                 end if;
                            
-                                s_round       <= std_logic_vector(unsigned(s_round) + 1);
+                                s_round       <= s_round + 1;
                                 s_current_key <= s_round_key;
                                 s_sbox_state  <= s_addition_state;
                          end if;
                          
-                         fsm_round <= std_logic_vector(unsigned(fsm_round) + 1); 
+                         fsm_round <= fsm_round + 1;
                         
                         when S_AES_DECRYPT =>
                             

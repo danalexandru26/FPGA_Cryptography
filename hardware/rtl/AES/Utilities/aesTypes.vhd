@@ -80,7 +80,7 @@ package functions is
         
     function gSchedule (
         word  : in byte_matrix (3 downto 0);
-        round : in std_logic_vector (7 downto 0))
+        round : in integer range 0 to 9)
         return byte_matrix;
         
     function "xor" (
@@ -112,7 +112,7 @@ package body functions is
         
     function gSchedule (
         word  : in byte_matrix (3 downto 0);
-        round : in std_logic_vector (7 downto 0))
+        round : in integer range 0 to 9)
         return byte_matrix is
         variable o_word : byte_matrix (3 downto 0);
         
@@ -120,7 +120,7 @@ package body functions is
             o_word(1) := substitution_table(to_integer(unsigned(word(2))));
             o_word(2) := substitution_table(to_integer(unsigned(word(3))));
             o_word(3) := substitution_table(to_integer(unsigned(word(0))));
-            o_word(0) := substitution_table(to_integer(unsigned(word(1)))) xor round_coefficient(to_integer(unsigned(round)));
+            o_word(0) := substitution_table(to_integer(unsigned(word(1)))) xor round_coefficient(round);
            
             return o_word;
         end function gSchedule;
@@ -173,5 +173,4 @@ package body functions is
         
             return result;
         end function;
-        
 end package body;

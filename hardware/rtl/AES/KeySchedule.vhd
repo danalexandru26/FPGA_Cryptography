@@ -28,7 +28,7 @@ use aes_utilities.functions.all;
 
 entity KeySchedule is
     port(
-        round  : in std_logic_vector(7 downto 0);
+        round  : in integer range 0 to 9;
         i_key  : in byte_matrix(15 downto 0);
         o_key  : out byte_matrix(15 downto 0)
 );
