@@ -92,6 +92,18 @@ package functions is
         left  : in byte_matrix (15 downto 0);
         right : in byte_matrix (15 downto 0))
         return byte_matrix;
+   
+    function matrix_row_major (
+        vector  : in std_logic_vector (127 downto 0))
+        return byte_matrix;
+ 
+    function matrix_column_major (
+        vector  : in std_logic_vector (127 downto 0))
+        return byte_matrix;
+    
+    function vectorize_row_major (
+        matrix : in byte_matrix (15 downto 0))
+        return std_logic_vector;
 end package;
 
 package body functions is
@@ -148,29 +160,128 @@ package body functions is
         
         begin
             FIRST_COLUMN:
-            result(0)  := left(0)  xor right(0);
-            result(4)  := left(4)  xor right(1);
-            result(8)  := left(8)  xor right(2);
-            result(12) := left(12) xor right(3);
-            
-        SECOND_COLUMN:
-            result(1)  := left(1)  xor right(4);
-            result(5)  := left(5)  xor right(5);
-            result(9)  := left(9)  xor right(6);
-            result(13) := left(13) xor right(7);
-            
-        THIRD_COLUMN:
-            result(2)  := left(2)  xor right(8);
-            result(6)  := left(6)  xor right(9);
-            result(10) := left(10) xor right(10);
-            result(14) := left(14) xor right(11);
-            
-        FOURTH_COLUMN:
-            result(3)  := left(3)  xor right(12);
-            result(7)  := left(7)  xor right(13);
-            result(11) := left(11) xor right(14);
-            result(15) := left(15) xor right(15);
+                result(0)  := left(0)  xor right(0);
+                result(4)  := left(4)  xor right(1);
+                result(8)  := left(8)  xor right(2);
+                result(12) := left(12) xor right(3);
+                
+            SECOND_COLUMN:
+                result(1)  := left(1)  xor right(4);
+                result(5)  := left(5)  xor right(5);
+                result(9)  := left(9)  xor right(6);
+                result(13) := left(13) xor right(7);
+                
+            THIRD_COLUMN:
+                result(2)  := left(2)  xor right(8);
+                result(6)  := left(6)  xor right(9);
+                result(10) := left(10) xor right(10);
+                result(14) := left(14) xor right(11);
+                
+            FOURTH_COLUMN:
+                result(3)  := left(3)  xor right(12);
+                result(7)  := left(7)  xor right(13);
+                result(11) := left(11) xor right(14);
+                result(15) := left(15) xor right(15);
         
             return result;
         end function;
-end package body;
+        
+    function matrix_row_major (
+        vector  : in std_logic_vector (127 downto 0))
+        return byte_matrix is
+        variable result : byte_matrix (15 downto 0);
+        
+        begin
+            FIRST_COLUMN:
+                result(0)  := vector(127 downto 120); 
+                result(4)  := vector(119 downto 112);
+                result(8)  := vector(111 downto 104); 
+                result(12) := vector(103 downto 96); 
+            
+            SECOND_COLUMN:
+                result(1)  := vector(95 downto 88);  
+                result(5)  := vector(87 downto 80);  
+                result(9)  := vector(79 downto 72);  
+                result(13) := vector(71 downto 64);  
+            
+            THIRD_COLUMN:
+                result(2)  := vector(63 downto 56); 
+                result(6)  := vector(55 downto 48);   
+                result(10) := vector(47 downto 40);   
+                result(14) := vector(39 downto 32);   
+            
+            FOURTH_COLUMN:
+                result(3)  := vector(31 downto 24);   
+                result(7)  := vector(23 downto 16);   
+                result(11) := vector(15 downto 8);    
+                result(15) := vector(7 downto 0);     
+
+            return result;
+        end function;
+ 
+    function matrix_column_major (
+        vector  : in std_logic_vector (127 downto 0))
+        return byte_matrix is
+        variable result : byte_matrix (15 downto 0);
+        
+        begin
+            FIRST_COLUMNOW:
+                result(0)  := vector(127 downto 120);
+                result(1)  := vector(119 downto 112);
+                result(2)  := vector(111 downto 104);
+                result(3)  := vector(103 downto 96);
+                            
+            SECOND_COLUMN:
+                result(4)  := vector(95 downto 88);
+                result(5)  := vector(87 downto 80);
+                result(6)  := vector(79 downto 72);
+                result(7)  := vector(71 downto 64);
+            
+            THIRD_COLUMN:
+                result(8)  := vector(63 downto 56);
+                result(9)  := vector(55 downto 48);
+                result(10) := vector(47 downto 40);
+                result(11) := vector(39 downto 32);
+            
+            FOURTH_COLUMN:
+                result(12) := vector(31 downto 24);
+                result(13) := vector(23 downto 16);
+                result(14) := vector(15 downto 8);
+                result(15) := vector(7 downto 0);
+        
+            return result;
+        end function;
+     
+    function vectorize_row_major (
+        matrix : in byte_matrix (15 downto 0))
+        return std_logic_vector is
+        variable result : std_logic_vector (127 downto 0);
+        
+        begin
+            FIRST_ROW:
+                result(7 downto 0)   := matrix(15);
+                result(15 downto 8)  := matrix(11);
+                result(23 downto 16) := matrix(7);
+                result(31 downto 24) := matrix(3);
+
+            SECOND_ROW:
+                result(39 downto 32) := matrix(14);
+                result(47 downto 40) := matrix(10);
+                result(55 downto 48) := matrix(6);
+                result(63 downto 56) := matrix(2);
+            
+            THIRD_ROW:
+                result(71 downto 64) := matrix(13);
+                result(79 downto 72) := matrix(9);
+                result(87 downto 80) := matrix(5);
+                result(95 downto 88) := matrix(1);
+            
+            FOURTH_ROW:
+                result(103 downto 96)  := matrix(12);
+                result(111 downto 104) := matrix(8);
+                result(119 downto 112) := matrix(4);
+                result(127 downto 120) := matrix(0);
+
+            return result;
+        end function;
+end package body;   

@@ -33,11 +33,11 @@ entity AES_Core is
         clk        : in std_logic;
         start      : in std_logic;
         command    : in std_logic;        
-        plaintext  : in byte_matrix (15 downto 0);
-        key        : in byte_matrix (15 downto 0);
+        plaintext  : in std_logic_vector (127 downto 0);
+        key        : in std_logic_vector (127 downto 0);
 
-        ciphertext : out byte_matrix (15 downto 0) := (others => (others => '0'));
-        ready      : out std_logic                 := '0'
+        ciphertext : out std_logic_vector (127 downto 0) := (others => '0');
+        ready      : out std_logic                       := '0'
 );
 end AES_Core;
 
@@ -58,12 +58,13 @@ architecture RTL of AES_Core is
         signal s_diffusion_output : byte_matrix (15 downto 0) := (others => (others => '0'));
         signal s_diffusion_sel    : std_logic := '0';
         
-        -- AES Intermediary State Signals
-        signal s_round_state : byte_matrix (15 downto 0) := (others => (others => '0'));
-        
         -- Finite State Machine Control Signals
         signal fsm_round   : integer range 0 to 9;
         signal state       : aes_state := S_AES_INIT;
+        
+        --Input Signal Wrappers
+        signal s_plaintext : byte_matrix (15 downto 0) := (others => (others => '0'));
+        signal s_key       : byte_matrix (15 downto 0) := (others => (others => '0'));
     begin
         
         c_SubstitutionBox : entity AES.SBox port map(
@@ -88,7 +89,6 @@ architecture RTL of AES_Core is
             round_key => s_round_key,
             output    => s_addition_state 
         );  
-
         
         process (clk) 
             begin
@@ -106,15 +106,18 @@ architecture RTL of AES_Core is
                         when S_AES_IDLE =>
                             if(start = '1') then
                                 if(command = '0') then
+                                     s_plaintext <= matrix_row_major(plaintext);
+                                     s_key       <= matrix_column_major(key);
                                      state <= S_AES_ENCRYPT;
+                                     
                                 else state <= S_AES_DECRYPT;
                                 end if;
                             end if;
                         
                         when S_AES_ENCRYPT =>
                             if(fsm_round = 0) then
-                                s_current_key <= key;
-                                s_sbox_state  <= matrix_xor(plaintext, key);
+                                s_current_key <= s_key;
+                                s_sbox_state  <= matrix_xor(s_plaintext, s_key);
                             
                             else
                                 if(fsm_round = 9) then
@@ -136,7 +139,7 @@ architecture RTL of AES_Core is
                                 state <= S_AES_IDLE;
                             end if;
                             
-                            ciphertext <= s_addition_state;
+                            ciphertext <= vectorize_row_major(s_addition_state);
                             ready      <= '1';
                         
                         when others =>
