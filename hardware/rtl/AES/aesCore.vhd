@@ -62,6 +62,10 @@ architecture RTL of AES_Core is
         signal fsm_round   : integer range 0 to 9;
         signal state       : aes_state := S_AES_INIT;
         
+        -- Finite State Machine Attribute Encoding
+        attribute FSM_ENCODING : string;
+        attribute FSM_ENCODING of state : signal is "one_hot";
+        
         --Input Signal Wrappers
         signal s_plaintext : byte_matrix (15 downto 0) := (others => (others => '0'));
         signal s_key       : byte_matrix (15 downto 0) := (others => (others => '0'));
