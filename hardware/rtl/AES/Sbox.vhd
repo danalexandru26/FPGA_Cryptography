@@ -2,7 +2,7 @@
 -- Company: 
 -- Engineer: Bulzan Dan-Alexandru
 -- 
--- Create Date: 08/13/2026 5:0:00 PM
+-- Create Date: 08/13/2026 5:00:00 PM
 -- Design Name: Substitution Box
 -- Module Name: Substitution Box - Behavioral
 -- Project Name: FPGA_Cryptography Advanced Encryption Standard Core
@@ -34,9 +34,9 @@ end SBox;
 
 architecture RTL of SBox is
     begin
-        gen_Substitute:
+        compute_substitute:
             for i in 0 to 15 generate
-            begin
-                substitute(i) <= substitution_table(to_integer(unsigned(state(i))));
-            end generate;
+                begin
+                    substitute(i) <= substitution_table(to_integer(unsigned(state(i))));
+                end generate;
 end RTL;
