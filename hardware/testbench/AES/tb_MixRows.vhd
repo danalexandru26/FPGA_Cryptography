@@ -29,7 +29,6 @@ library aes_utilities;
 use aes_utilities.types.all;
 
 entity tb_MixRows is
-
 end tb_MixRows;
 
 architecture TB of tb_MixRows is
