@@ -113,6 +113,11 @@ package functions is
         state_in : in std_logic_vector (7 downto 0))
         return std_logic_vector;
         
+    function xtime (
+        state_in : in std_logic_vector (7 downto 0);
+        n        : in integer)
+        return std_logic_vector;
+        
     function gSchedule (
         word  : in byte_matrix (3 downto 0);
         round : in integer range 0 to 9)
@@ -156,6 +161,20 @@ package body functions is
             
             return a_mod;
         end function xtime;
+        
+    function xtime (
+        state_in : in std_logic_vector (7 downto 0);
+        n        : in integer)
+        return std_logic_vector is
+        variable a_mod : std_logic_vector(7 downto 0) := state_in;
+        
+        begin
+            for i in 0 to n-1 loop
+                a_mod := xtime(a_mod);
+            end loop;
+        
+            return a_mod;
+        end function;
         
     function gSchedule (
         word  : in byte_matrix (3 downto 0);
