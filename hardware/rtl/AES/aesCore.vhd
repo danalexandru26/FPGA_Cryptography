@@ -136,7 +136,7 @@ architecture RTL of AES_Core is
                             
                         when S_AES_ENCRYPT_DONE =>
                             if(start = '0') then
-                                state <= S_AES_IDLE;
+                                state <= S_AES_INIT;
                             end if;
                             
                             ciphertext <= vectorize_row_major(s_addition_state);
