@@ -22,8 +22,9 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 package types is
-    type byte_matrix is array (natural range <>) of std_logic_vector(7 downto 0);
-    type aes_state is(S_AES_INIT, S_AES_IDLE, S_AES_ENCRYPT, S_AES_DECRYPT, S_AES_ENCRYPT_DONE, S_AES_DECRYPT_DONE);
+    type byte_matrix is array (natural range <>) of std_logic_vector (7 downto 0);
+    type key_array   is array (natural range <>) of byte_matrix (15 downto 0);
+    type aes_state is(S_AES_INIT, S_AES_IDLE, S_AES_ENCRYPT, S_AES_DECRYPT_KEYS, S_AES_DECRYPT, S_AES_ENCRYPT_DONE, S_AES_DECRYPT_DONE);
     
     constant substitution_table : byte_matrix (255 downto 0) := (
             0    => x"63", 1    => x"7C", 2    => x"77", 3    => x"7B", 4    => x"F2", 5    => x"6B", 6    => x"6F", 7    => x"C5",

@@ -64,11 +64,29 @@ architecture TB of tb_Core is
     TEST: process   
           begin
               wait for 10ns;
-              s_start <= '1';
+              s_command <= '1';
               
-              s_plaintext <= x"00000000000000000000000000000001";
+              wait for 10ns;
+              s_plaintext <= x"6A118A874519E64E9963798A503F1D35";
               s_key       <= x"00000000000000000000000000000000";
-                    
-              wait;   
+                 
+              wait for 10ns;
+              s_start   <= '1';
+              wait for 10ns;
+              s_start   <= '0';
+              
+               
+              wait for 300ns;
+              s_command <= '1';
+              
+              wait for 10ns;
+              s_plaintext <= x"B26AEB1874E47CA8358FF22378F09144";
+              s_key       <= x"00000000000000000000000000000000";
+                 
+              wait for 10ns;
+              s_start   <= '1';
+              wait for 10ns;
+              s_start   <= '0';
+              wait;  
           end process;  
 end TB;
