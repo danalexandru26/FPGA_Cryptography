@@ -34,20 +34,19 @@ entity tb_SBox is
 end tb_SBox;
 
 architecture TB of tb_Sbox is
-        signal tb_input  : byte_matrix (15 downto 0);
-        signal tb_result : byte_matrix (15 downto 0);
+        signal tb_state  : byte_matrix (15 downto 0);
+        signal tb_substitute : byte_matrix (15 downto 0);
     
     begin
         DUT: entity SBox port map(
-             state      => tb_input,
-             substitute => tb_result
+             state      => tb_state,
+             substitute => tb_substitute
         );
         
         TEST: process
             begin
-               
                wait for 10ns;
-               tb_input <= (
+               tb_state <= (
                     0  => x"00", 1   => x"01", 2  => x"02", 3  => x"03",
                     4  => x"04", 5   => x"05", 6  => x"06", 7  => x"07",
                     8  => x"08", 9   => x"09", 10 => x"0A", 11 => x"0B",
@@ -55,12 +54,12 @@ architecture TB of tb_Sbox is
                 );
                 
                 wait for 10ns;
-                tb_input <= (
+                tb_state <= (
                     0  => x"A7", 1   => x"3C", 2  => x"F1", 3  => x"09",
                     4  => x"52", 5   => x"DE", 6  => x"81", 7  => x"B4",
                     8  => x"6F", 9   => x"10", 10 => x"C8", 11 => x"35",
                     12 => x"E2", 13  => x"99", 14 => x"47", 15 => x"BD"
-                );
-            
+                );    
+                wait;
             end process;
 end TB;

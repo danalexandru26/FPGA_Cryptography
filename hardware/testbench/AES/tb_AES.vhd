@@ -63,14 +63,12 @@ architecture TB of tb_Core is
     
     TEST: process   
           begin
-          
-          wait for 10ns;
-          s_start <= '1';
-          
-          s_plaintext <= x"00000000000000000000000000000001";
-          s_key       <= x"00000000000000000000000000000000";
-                
-          wait;   
-    end process;
-   
+              wait for 10ns;
+              s_start <= '1';
+              
+              s_plaintext <= x"00000000000000000000000000000001";
+              s_key       <= x"00000000000000000000000000000000";
+                    
+              wait;   
+          end process;  
 end TB;
